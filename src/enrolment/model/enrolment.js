@@ -11,6 +11,16 @@ export default (sequelize) => {
         autoIncrement: true,
       },
 
+      student_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
+
+      course_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
+
       createdAt: {
         type: Sequelize.DATEONLY,
         allowNull: false,
