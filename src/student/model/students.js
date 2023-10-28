@@ -1,4 +1,5 @@
 import { Sequelize } from "sequelize";
+import bcrypt from "bcrypt";
 
 export default (sequelize) => {
   class Student extends Sequelize.Model {}
@@ -50,6 +51,30 @@ export default (sequelize) => {
           notEmpty: {
             msg: "Provide an email",
           },
+        },
+      },
+
+      password: {
+        type: Sequelize.VIRTUAL,
+        allowNull: false,
+
+        validate: {
+          is: /^(?=.*[A-Z]).{8,}$/i, // Regex constraint for at least 1 uppercase letter and minimum length of 8 characters
+        },
+      },
+
+      confirmedPassword: {
+        type: Sequelize.STRING,
+        allowNull: false,
+        set(val) {
+          if (val == this.password) {
+            const hashPassword = bcrypt.hashSync(val, 10);
+            this.setDataValue("confirmedPassword", hashPassword);
+            return hashPassword;
+          }
+        },
+        validate: {
+          is: /^(?=.*[A-Z]).{8,}$/i, // Regex constraint for at least 1 uppercase letter and minimum length of 8 characters
         },
       },
 

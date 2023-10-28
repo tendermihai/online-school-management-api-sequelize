@@ -1,9 +1,9 @@
 import { Sequelize } from "sequelize";
 
-import book from "../models/book.js";
-import students from "../models/students.js";
-import course from "../models/course.js";
-import enrolment from "../models/enrolment.js";
+import Book from "../book/model/book.js";
+import Student from "../student/model/students.js";
+import Course from "../course/model/course.js";
+import Enrolment from "../enrolment/model/enrolment.js";
 
 const connectDb = () => {
   try {
@@ -18,14 +18,14 @@ const connectDb = () => {
 
     db.Sequelize = Sequelize;
     db.sequelize = sequelize;
-    db.models.students = students(sequelize);
-    db.models.course = course(sequelize);
-    db.models.book = book(sequelize);
+    db.models.Student = Student(sequelize);
+    db.models.Course = Course(sequelize);
+    db.models.Book = Book(sequelize);
 
-    db.models.enrolment = enrolment(sequelize);
+    db.models.Enrolment = Enrolment(sequelize);
 
     //many -to-one relationship between  student and book
-    db.models.students.hasMany(db.models.book, {
+    db.models.Student.hasMany(db.models.Book, {
       onDelete: "CASCADE",
       as: "fk_studentId",
 
@@ -35,7 +35,7 @@ const connectDb = () => {
       },
     });
 
-    db.models.book.belongsTo(db.models.students, {
+    db.models.Book.belongsTo(db.models.Student, {
       as: "fk_studentId",
 
       foreignKey: {
@@ -45,7 +45,7 @@ const connectDb = () => {
     });
 
     //many to one between student and enrolment
-    db.models.students.hasMany(db.models.enrolment, {
+    db.models.Student.hasMany(db.models.Enrolment, {
       onDelete: "CASCADE",
       as: "fk_student_Id",
 
@@ -55,7 +55,7 @@ const connectDb = () => {
       },
     });
 
-    db.models.enrolment.belongsTo(db.models.students, {
+    db.models.Enrolment.belongsTo(db.models.Student, {
       as: "fk_student_Id",
       foreignKey: {
         fieldName: "student_id",
@@ -65,7 +65,7 @@ const connectDb = () => {
 
     //many-to-many between enrolment and course
 
-    db.models.course.hasMany(db.models.enrolment, {
+    db.models.Course.hasMany(db.models.Enrolment, {
       onDelete: "CASCADE",
       as: "fk_courseId",
       foreignKey: {
@@ -74,7 +74,7 @@ const connectDb = () => {
       },
     });
 
-    db.models.enrolment.belongsTo(db.models.course, {
+    db.models.Enrolment.belongsTo(db.models.Course, {
       as: "fk_courseId",
       foreignKey: {
         fieldName: "course_id",
