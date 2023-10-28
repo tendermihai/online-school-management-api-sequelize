@@ -1,16 +1,42 @@
 import db from "../../config/db.js";
-
 import asyncHandler from "express-async-handler";
 
 let getAll = asyncHandler(async (req, res) => {
-  let all = await db.models.Book.findAll();
-  res.status(200).json(all);
+  let studentId = req.user.id;
+  console.log(studentId, "this is student ID");
+  let book = await db.models.Book.findAll({
+    where: { student_id: studentId },
+  });
+
+  if (book.length === 0) {
+    return res.status(401).json("User has no books");
+  }
+  res.status(200).json(book);
 });
 
-let addBook = asyncHandler(async (req, res) => {
-  let obj = req.body;
-  await db.models.Book.create(obj);
-  res.status(200).end();
+const addBook = asyncHandler(async (req, res) => {
+  try {
+    const { bookName, createdAt, student_id } = req.body;
+
+    // Example code for adding the book to the database
+    await db.models.Book.create({
+      bookName: bookName,
+      createdAt: createdAt,
+      student_id: student_id,
+    });
+
+    res.status(200).json({
+      type: "success",
+      payload: "Book successfully added",
+    });
+  } catch (error) {
+    console.error("An error occurred while adding the book:", error);
+
+    res.status(500).json({
+      type: "error",
+      payload: "An error occurred while adding the book",
+    });
+  }
 });
 
 let deleteBook = asyncHandler(async (req, res) => {
@@ -56,17 +82,8 @@ const updateBook = asyncHandler(async (req, res) => {
 
 const getBookByStudentId = asyncHandler(async (req, res) => {
   let { id } = req.params;
-  let book = await db.models.Book.findByPk(id);
-
-  if (!book) {
-    res.status(404).json({ message: "Cannot find book." });
-    return;
-  }
-
-  let student_id = book.student_id;
-
   let books = await db.models.Book.findAll({
-    where: { student_id: student_id },
+    where: { student_id: id },
   });
 
   res.status(200).json(books);

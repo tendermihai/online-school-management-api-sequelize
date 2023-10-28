@@ -78,6 +78,10 @@ const loginStudent = asyncHandler(async (req, res) => {
     if (check) {
       res.status(202).json({
         user: {
+          id: foundUser.id,
+          firstName: foundUser.firstName,
+          lastName: foundUser.lastName,
+          email: foundUser.email,
           token: generateToken(foundUser.id, foundUser.email),
         },
       });
